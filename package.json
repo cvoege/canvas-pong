@@ -1,0 +1,39 @@
+{
+  "name": "canvas-pong",
+  "version": "0.0.1",
+  "description": "Pong implemented using canvas and a functional programming style",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "npx http-server ./ -c-1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cvoege/canvas-pong.git"
+  },
+  "keywords": [
+    "canvas",
+    "pong",
+    "fp",
+    "functional",
+    "programming",
+    "javascript",
+    "js",
+    "ml",
+    "ai",
+    "machine",
+    "learning",
+    "adversarial",
+    "neural",
+    "network"
+  ],
+  "author": "cvoege@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cvoege/canvas-pong/issues"
+  },
+  "homepage": "https://github.com/cvoege/canvas-pong#readme",
+  "dependencies": {
+    "http-server": "^0.11.1"
+  }
+}
