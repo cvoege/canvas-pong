@@ -10,11 +10,11 @@ export const getNextPaddle = (
   const pixelChange = getPixelChange(PADDLE_MOVE_SPEED, timeDifference);
   const getRawYPos = () => {
     if (upPressed) {
-      return downPressed ? paddle.yPos : paddle.yPos - pixelChange;
+      return downPressed ? paddle.y : paddle.y - pixelChange;
     } else if (downPressed) {
-      return paddle.yPos + pixelChange;
+      return paddle.y + pixelChange;
     } else {
-      return paddle.yPos;
+      return paddle.y;
     }
   };
   const rawYPosition = getRawYPos();
@@ -29,5 +29,5 @@ export const getNextPaddle = (
     }
   };
 
-  return { ...paddle, yPos: getYPosition() };
+  return { ...paddle, y: getYPosition() };
 };

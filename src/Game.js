@@ -20,12 +20,12 @@ const drawBackground = (context) => {
 
 const drawPaddle = (context, paddle) => {
   context.fillStyle = WHITE;
-  context.fillRect(paddle.xPos, paddle.yPos, PADDLE_WIDTH, PADDLE_HEIGHT);
+  context.fillRect(paddle.x, paddle.y, PADDLE_WIDTH, PADDLE_HEIGHT);
 };
 
 const drawBall = (context, ball) => {
   context.fillStyle = WHITE;
-  context.fillRect(ball.xPos, ball.yPos, ball.size, ball.size);
+  context.fillRect(ball.x, ball.y, ball.size, ball.size);
 };
 
 const tick = (state, inputs, timeDifference) => {
