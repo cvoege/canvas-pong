@@ -29,5 +29,23 @@ export const getNextPaddle = (
     }
   };
 
-  return { ...paddle, y: getYPosition() };
+  const getSpeed = () => {
+    if ((upPressed && !downPressed) || (!upPressed && downPressed)) {
+      return PADDLE_MOVE_SPEED;
+    } else {
+      return 0;
+    }
+  };
+
+  const getAngle = () => {
+    if (upPressed && !downPressed) {
+      return -Math.PI / 2;
+    } else if (!upPressed && downPressed) {
+      return Math.PI / 2;
+    } else {
+      return 0;
+    }
+  };
+
+  return { ...paddle, y: getYPosition(), speed: getSpeed(), angle: getAngle() };
 };

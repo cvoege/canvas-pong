@@ -1,7 +1,7 @@
-export function reflectOnYAxis(angle) {
+export function reflectOnXAxis(angle) {
   return -angle;
 }
 
-export function reflectOnXAxis(angle) {
+export function reflectOnYAxis(angle) {
   return Math.PI - angle;
 }
