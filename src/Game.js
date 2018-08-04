@@ -75,8 +75,8 @@ export function start() {
   });
 }
 
-// TODO: make the ball a circle
 // TODO: Consider switching from speed/angle to vx/vy. Also, switch to storing speed/angle (or vx/vy, whichever we choose), in a "vector" object inside the object
+// TODO: add spooky ghost trail on ball that represents how fast it's going
 // TODO: add flow/typescript
 // TODO: add eslint
 // TODO: adversarial neural network bewteen left and right side

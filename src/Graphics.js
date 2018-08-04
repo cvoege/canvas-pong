@@ -17,7 +17,17 @@ export const text = (object) => (context) => {
 
 export const circle = (object) => (context) => {
   context.fillStyle = object.color;
-  context.arc(object.x, object.y, object.radius, 0, Math.PI * 2, false);
+  // const circle = new Path2D();
+  // circle.moveTo(object.)
+  context.beginPath();
+  context.arc(
+    object.x + object.radius,
+    object.y + object.radius,
+    object.radius,
+    0,
+    Math.PI * 2,
+    false,
+  );
   context.fill();
 };
 
