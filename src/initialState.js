@@ -9,6 +9,8 @@ import {
 
 import { WHITE } from './Color.js';
 
+import { zeroVector } from './Vector.js';
+
 export default {
   paddle1: {
     id: 'paddle1',
@@ -16,8 +18,7 @@ export default {
     x: PADDLE_DISTANCE_FROM_WALL,
     height: PADDLE_HEIGHT,
     width: PADDLE_WIDTH,
-    angle: 0,
-    speed: 0,
+    vector: zeroVector(),
     color: WHITE,
   },
   paddle2: {
@@ -26,8 +27,7 @@ export default {
     x: WIDTH - PADDLE_DISTANCE_FROM_WALL * 2,
     height: PADDLE_HEIGHT,
     width: PADDLE_WIDTH,
-    angle: 0,
-    speed: 0,
+    vector: zeroVector(),
     color: WHITE,
   },
   scores: {
@@ -49,19 +49,8 @@ export default {
   ball: {
     x: WIDTH / 2 - BALL_RADIUS,
     y: HEIGHT / 2 - BALL_RADIUS,
-    angle: 0,
-    speed: 0,
+    vector: zeroVector(),
     radius: BALL_RADIUS,
     color: WHITE,
   },
 };
-
-// export default {
-//   getState() {
-//     return state;
-//   },
-//   updateState(overrides) {
-//     state = overrides;
-//     return state;
-//   },
-// };

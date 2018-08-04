@@ -75,7 +75,9 @@ export function start() {
   });
 }
 
-// TODO: Consider switching from speed/angle to vx/vy. Also, switch to storing speed/angle (or vx/vy, whichever we choose), in a "vector" object inside the object
+// TODO: normalize coordinates into a coordinates object like we did with vectors
+// TODO: normalize sizes into a sizes object like we did with vectors/coordiantes
+// TODO: switch away from http-server since it injects scripts
 // TODO: add spooky ghost trail on ball that represents how fast it's going
 // TODO: add flow/typescript
 // TODO: add eslint

@@ -1,5 +1,6 @@
 import { HEIGHT } from './Size.js';
 import { PADDLE_MOVE_SPEED, getPixelChange } from './Speed.js';
+import { zeroVector } from './Vector.js';
 
 export const getNextPaddle = (
   paddle,
@@ -37,15 +38,21 @@ export const getNextPaddle = (
     }
   };
 
-  const getAngle = () => {
+  const getVector = () => {
     if (upPressed && !downPressed) {
-      return -Math.PI / 2;
+      return {
+        vy: -PADDLE_MOVE_SPEED,
+        vx: 0,
+      };
     } else if (!upPressed && downPressed) {
-      return Math.PI / 2;
+      return {
+        vy: PADDLE_MOVE_SPEED,
+        vx: 0,
+      };
     } else {
-      return 0;
+      return zeroVector();
     }
   };
 
-  return { ...paddle, y: getYPosition(), speed: getSpeed(), angle: getAngle() };
+  return { ...paddle, y: getYPosition(), vector: getVector() };
 };

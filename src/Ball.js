@@ -1,13 +1,14 @@
 import { WIDTH, HEIGHT, PADDLE_WIDTH, PADDLE_HEIGHT } from './Size.js';
-import { reflectOnXAxis, reflectOnYAxis } from './Reflect.js';
 import { right, bottom, left } from './Rectangle.js';
 import { rawMove } from './Move.js';
 
 import {
-  getVectorX,
-  getVectorY,
-  getVectorMagnitude,
-  getVectorAngle,
+  reflectOnXAxis,
+  reflectOnYAxis,
+  addVectors,
+  mulityVectorByScalar,
+  zeroVector,
+  getVectorFromDirectionVector,
 } from './Vector.js';
 
 // TODO: move this into a different file
@@ -16,29 +17,15 @@ function checkCollision(a, b) {
 }
 
 function combineBallAndPaddleVector(ball, paddle) {
-  const reversedBallAngle = reflectOnYAxis(ball.angle);
+  const reversedBallVector = reflectOnYAxis(ball.vector);
+  console.log(1, reversedBallVector);
   // Lower the speed of the paddle when calculating combined speed
   // to account for friction, otherwise ball gets super fast super quick.
-  const adjustedPaddleSpeed = paddle.speed / 3;
+  const adjustedPaddleVector = mulityVectorByScalar(paddle.vector, 1 / 3);
+  console.log(2, adjustedPaddleVector);
 
-  const vectorX =
-    getVectorX(reversedBallAngle, ball.speed) +
-    getVectorX(paddle.angle, adjustedPaddleSpeed);
-  const vectorY =
-    getVectorY(reversedBallAngle, ball.speed) +
-    getVectorY(paddle.angle, adjustedPaddleSpeed);
-
-  return [vectorX, vectorY];
-}
-
-function getSpeedFromCollision(ball, paddle) {
-  const [vectorX, vectorY] = combineBallAndPaddleVector(ball, paddle);
-  return getVectorMagnitude(vectorX, vectorY);
-}
-
-function getAngleFromCollision(ball, paddle) {
-  const [vectorX, vectorY] = combineBallAndPaddleVector(ball, paddle);
-  return getVectorAngle(vectorX, vectorY);
+  console.log(3, addVectors(reversedBallVector, adjustedPaddleVector));
+  return addVectors(reversedBallVector, adjustedPaddleVector);
 }
 
 export const getNextBall = (
@@ -55,39 +42,31 @@ export const getNextBall = (
   const collidesWithPaddle2 = checkCollision(ball, paddle2);
   const offScreenRight = right(rawBall) > WIDTH;
   const offScreenLeft = rawBall.x < 0;
+  const offScreenDown = bottom(rawBall) > WIDTH;
+  const offScreenUp = rawBall.y < 0;
 
-  const getAngle = () => {
-    if (bottom(rawBall) > HEIGHT || rawBall.y < 0) {
-      return reflectOnXAxis(rawBall.angle);
+  const getVector = () => {
+    if (offScreenUp || offScreenDown) {
+      return reflectOnXAxis(rawBall.vector);
     } else if (collidesWithPaddle1) {
-      return getAngleFromCollision(rawBall, paddle1);
+      return combineBallAndPaddleVector(rawBall, paddle1);
     } else if (collidesWithPaddle2) {
-      return getAngleFromCollision(rawBall, paddle2);
-    } else if (spacePressed && rawBall.speed === 0) {
+      return combineBallAndPaddleVector(rawBall, paddle2);
+    } else if (offScreenRight || offScreenLeft) {
+      return zeroVector();
+    } else if (
+      spacePressed &&
+      rawBall.vector.vx === 0 &&
+      rawBall.vector.vy === 0
+    ) {
       const baseAngle = Math.random() * (Math.PI / 4) - Math.PI / 8;
-      if (Math.random() >= 0.5) {
-        return baseAngle;
-      } else {
-        return reflectOnYAxis(baseAngle);
-      }
+      const baseVector = getVectorFromDirectionVector({
+        angle: baseAngle,
+        magnitude: 0.35,
+      });
+      return Math.random() >= 0.5 ? baseVector : reflectOnYAxis(baseVector);
     } else {
-      return rawBall.angle;
-    }
-  };
-
-  const getSpeed = () => {
-    if (offScreenRight) {
-      return 0;
-    } else if (offScreenLeft) {
-      return 0;
-    } else if (spacePressed && rawBall.speed === 0) {
-      return 0.35;
-    } else if (collidesWithPaddle1) {
-      return getSpeedFromCollision(rawBall, paddle1);
-    } else if (collidesWithPaddle2) {
-      return getSpeedFromCollision(rawBall, paddle2);
-    } else {
-      return rawBall.speed;
+      return rawBall.vector;
     }
   };
 
@@ -144,8 +123,7 @@ export const getNextBall = (
   return [
     {
       ...rawBall,
-      angle: getAngle(),
-      speed: getSpeed(),
+      vector: getVector(),
       x: getXPos(),
       y: getYPos(),
     },
