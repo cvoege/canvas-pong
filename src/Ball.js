@@ -37,7 +37,6 @@ function getSpeedFromCollision(ball, paddle) {
 
 function getAngleFromCollision(ball, paddle) {
   const [vectorX, vectorY] = combineBallAndPaddleVector(ball, paddle);
-  console.log(getVectorAngle(vectorX, vectorY));
   return getVectorAngle(vectorX, vectorY);
 }
 
@@ -118,7 +117,6 @@ export const getNextBall = (
       // return 2 * right(paddle1) - rawBall.x;
       return right(paddle1) + 1;
     } else if (collidesWithPaddle2) {
-      console.log(left(paddle2), rawBall.width, -1);
       return left(paddle2) - rawBall.width - 1;
       // return paddle2.x - (right(rawBall) - paddle2.x) - rawBall.width;
     } else {
@@ -128,9 +126,15 @@ export const getNextBall = (
 
   const getNextScores = () => {
     if (offScreenRight) {
-      return { ...scores, paddle1: scores.paddle1 + 1 };
+      return {
+        ...scores,
+        paddle1: { ...scores.paddle1, value: scores.paddle1.value + 1 },
+      };
     } else if (offScreenLeft) {
-      return { ...scores, paddle2: scores.paddle2 + 1 };
+      return {
+        ...scores,
+        paddle2: { ...scores.paddle2, value: scores.paddle2.value + 1 },
+      };
     } else {
       return scores;
     }

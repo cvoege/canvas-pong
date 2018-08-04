@@ -7,6 +7,8 @@ import {
   PADDLE_DISTANCE_FROM_WALL,
 } from './Size.js';
 
+import { WHITE } from './Color.js';
+
 export default {
   paddle1: {
     id: 'paddle1',
@@ -16,6 +18,7 @@ export default {
     width: PADDLE_WIDTH,
     angle: 0,
     speed: 0,
+    color: WHITE,
   },
   paddle2: {
     id: 'paddle2',
@@ -25,10 +28,23 @@ export default {
     width: PADDLE_WIDTH,
     angle: 0,
     speed: 0,
+    color: WHITE,
   },
   scores: {
-    paddle1: 0,
-    paddle2: 0,
+    paddle1: {
+      value: 0,
+      color: WHITE,
+      font: '30px Comic Sans MS',
+      x: 80,
+      y: 50,
+    },
+    paddle2: {
+      value: 0,
+      color: WHITE,
+      font: '30px Comic Sans MS',
+      x: WIDTH - 110,
+      y: 50,
+    },
   },
   ball: {
     x: WIDTH / 2 - BALL_SIZE / 2,
@@ -37,6 +53,7 @@ export default {
     speed: 0,
     width: BALL_SIZE,
     height: BALL_SIZE,
+    color: WHITE,
   },
 };
 

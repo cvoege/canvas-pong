@@ -13,28 +13,7 @@ import { getNextPaddle } from './Paddle.js';
 import { REFRESH_RATE } from './Speed.js';
 
 import { getNextBall } from './Ball.js';
-
-const drawBackground = (context) => {
-  context.fillStyle = BLACK;
-  context.fillRect(0, 0, WIDTH, HEIGHT);
-};
-
-const drawPaddle = (context, paddle) => {
-  context.fillStyle = WHITE;
-  context.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
-};
-
-const drawBall = (context, ball) => {
-  context.fillStyle = WHITE;
-  context.fillRect(ball.x, ball.y, ball.width, ball.height);
-  context.font = '30px Comic Sans MS';
-};
-
-const drawScores = (context, scores) => {
-  context.font = '30px Comic Sans MS';
-  context.fillText(`${scores['paddle1']}`, 80, 50);
-  context.fillText(`${scores['paddle2']}`, WIDTH - 110, 50);
-};
+import { getRender, rectangle, text } from './Graphics.js';
 
 const tick = (state, inputs, timeDifference) => {
   const { keys } = inputs;
@@ -71,19 +50,25 @@ const tick = (state, inputs, timeDifference) => {
   };
 };
 
-const redraw = (context, previousState, previousTime) => {
+const mapStateToGraphics = (state) => {
+  return [
+    rectangle(state.paddle1),
+    rectangle(state.paddle2),
+    rectangle(state.ball),
+    text(state.scores.paddle1),
+    text(state.scores.paddle2),
+  ];
+};
+
+const redraw = (render, previousState, previousTime) => {
   const currentTime = Date.now();
   const state = tick(previousState, getInputs(), currentTime - previousTime);
-  drawBackground(context);
-  drawPaddle(context, state.paddle1);
-  drawPaddle(context, state.paddle2);
-  drawBall(context, state.ball);
-  drawScores(context, state.scores);
+  render(mapStateToGraphics(state));
   const renderTimeDifference = Date.now() - currentTime;
 
   setTimeout(
     () => {
-      redraw(context, state, currentTime);
+      redraw(render, state, currentTime);
     },
     // Approximate how long we should wait to acheive 60fps based on how long it took to render that.
     // If render time becomes too long, and the timeout would be reduced to below 5,
@@ -98,7 +83,8 @@ export function start() {
   canvas.width = WIDTH;
   canvas.height = HEIGHT;
   const context = canvas.getContext('2d');
-  redraw(context, initialState, Date.now());
+  const render = getRender({ backgroundColor: BLACK, context });
+  redraw(render, initialState, Date.now());
 }
 
 // TODO: add spin
