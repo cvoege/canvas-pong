@@ -1,37 +1,61 @@
-const drawBackground = (context, backgroundColor) => {
-  context.fillStyle = backgroundColor;
-  context.fillRect(0, 0, context.canvas.width, context.canvas.height);
+import getInputs from './getInputs.js';
+
+const clearFrame = (context) => {
+  context.clearRect(0, 0, context.canvas.width, context.canvas.height);
 };
 
 export const rectangle = (object) => (context) => {
   context.fillStyle = object.color;
   context.fillRect(object.x, object.y, object.width, object.height);
 };
+
 export const text = (object) => (context) => {
   context.fillStyle = object.color;
   context.font = object.font;
   context.fillText(`${object.value}`, object.x, object.y);
 };
 
-// const drawPaddle = (context, paddle) => {
-//   context.fillStyle = WHITE;
-//   context.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
-// };
+export const circle = (object) => (context) => {
+  context.fillStyle = object.color;
+  context.arc(object.x, object.y, object.radius, 0, Math.PI * 2, false);
+  context.fill();
+};
 
-// const drawBall = (context, ball) => {
-//   context.fillStyle = WHITE;
-//   context.fillRect(ball.x, ball.y, ball.width, ball.height);
-// };
+export const startGame = ({
+  canvas,
+  refreshRate,
+  initialState,
+  tick,
+  mapStateToGraphics,
+  alpha = false,
+}) => {
+  const context = canvas.getContext('2d', { alpha });
 
-// const drawScores = (context, scores) => {
-//   context.font = '30px Comic Sans MS';
-//   context.fillText(`${scores['paddle1'].value}`, 80, 50);
-//   context.fillText(`${scores['paddle2'].value}`, WIDTH - 110, 50);
-// };
+  const redraw = (previousState, previousTime) => {
+    // Get current time
+    const currentTime = Date.now();
 
-export const getRender = ({ backgroundColor, context }) => (renderables) => {
-  drawBackground(context, backgroundColor);
-  renderables.forEach((renderable) => {
-    renderable(context);
-  });
+    // Process new state
+    const state = tick(previousState, getInputs(), currentTime - previousTime);
+    const renderables = mapStateToGraphics(state);
+
+    // Draw to canvas
+    clearFrame(context);
+    renderables.forEach((renderable) => {
+      renderable(context);
+    });
+
+    const renderTimeDifference = Date.now() - currentTime;
+
+    setTimeout(
+      () => redraw(state, currentTime),
+      // Approximate how long we should wait to acheive 60fps based on how long it took to
+      // render the last frame.
+      // The app needs time between renders to process user input and such, so we guarantee
+      // a minimum of 5ms between repaints to give the browser some time to breath.
+      Math.max(refreshRate - renderTimeDifference, 5),
+    );
+  };
+
+  redraw(initialState, Date.now());
 };

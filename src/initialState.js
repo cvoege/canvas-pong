@@ -3,8 +3,8 @@ import {
   PADDLE_WIDTH,
   PADDLE_HEIGHT,
   WIDTH,
-  BALL_SIZE,
   PADDLE_DISTANCE_FROM_WALL,
+  BALL_RADIUS,
 } from './Size.js';
 
 import { WHITE } from './Color.js';
@@ -47,12 +47,11 @@ export default {
     },
   },
   ball: {
-    x: WIDTH / 2 - BALL_SIZE / 2,
-    y: HEIGHT / 2 - BALL_SIZE / 2,
+    x: WIDTH / 2 - BALL_RADIUS,
+    y: HEIGHT / 2 - BALL_RADIUS,
     angle: 0,
     speed: 0,
-    width: BALL_SIZE,
-    height: BALL_SIZE,
+    radius: BALL_RADIUS,
     color: WHITE,
   },
 };

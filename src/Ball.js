@@ -10,6 +10,7 @@ import {
   getVectorAngle,
 } from './Vector.js';
 
+// TODO: move this into a different file
 function checkCollision(a, b) {
   return a.x < right(b) && right(a) > b.x && a.y < bottom(b) && bottom(a) > b.y;
 }
@@ -18,7 +19,7 @@ function combineBallAndPaddleVector(ball, paddle) {
   const reversedBallAngle = reflectOnYAxis(ball.angle);
   // Lower the speed of the paddle when calculating combined speed
   // to account for friction, otherwise ball gets super fast super quick.
-  const adjustedPaddleSpeed = paddle.speed / 5;
+  const adjustedPaddleSpeed = paddle.speed / 3;
 
   const vectorX =
     getVectorX(reversedBallAngle, ball.speed) +
@@ -117,8 +118,8 @@ export const getNextBall = (
       // return 2 * right(paddle1) - rawBall.x;
       return right(paddle1) + 1;
     } else if (collidesWithPaddle2) {
-      return left(paddle2) - rawBall.width - 1;
-      // return paddle2.x - (right(rawBall) - paddle2.x) - rawBall.width;
+      return left(paddle2) - rawBall.radius * 2 - 1;
+      // return paddle2.x - (right(rawBall) - paddle2.x) - (rawBall.radius * 2);
     } else {
       return rawBall.x;
     }

@@ -1,5 +1,5 @@
 import initialState from './initialState.js';
-import getInputs, {
+import {
   S_KEYCODE,
   W_KEYCODE,
   DOWN_KEYCODE,
@@ -13,7 +13,7 @@ import { getNextPaddle } from './Paddle.js';
 import { REFRESH_RATE } from './Speed.js';
 
 import { getNextBall } from './Ball.js';
-import { getRender, rectangle, text } from './Graphics.js';
+import { rectangle, text, circle, startGame } from './Graphics.js';
 
 const tick = (state, inputs, timeDifference) => {
   const { keys } = inputs;
@@ -54,43 +54,30 @@ const mapStateToGraphics = (state) => {
   return [
     rectangle(state.paddle1),
     rectangle(state.paddle2),
-    rectangle(state.ball),
+    circle(state.ball),
     text(state.scores.paddle1),
     text(state.scores.paddle2),
   ];
-};
-
-const redraw = (render, previousState, previousTime) => {
-  const currentTime = Date.now();
-  const state = tick(previousState, getInputs(), currentTime - previousTime);
-  render(mapStateToGraphics(state));
-  const renderTimeDifference = Date.now() - currentTime;
-
-  setTimeout(
-    () => {
-      redraw(render, state, currentTime);
-    },
-    // Approximate how long we should wait to acheive 60fps based on how long it took to render that.
-    // If render time becomes too long, and the timeout would be reduced to below 5,
-    // the app will be very unresponsive, so demand at least 5 ms wait so inputs and
-    // other event looped things can happen
-    Math.max(REFRESH_RATE - renderTimeDifference, 5),
-  );
 };
 
 export function start() {
   const canvas = document.getElementById('canvas');
   canvas.width = WIDTH;
   canvas.height = HEIGHT;
-  const context = canvas.getContext('2d');
-  const render = getRender({ backgroundColor: BLACK, context });
-  redraw(render, initialState, Date.now());
+  canvas.style.backgroundColor = BLACK;
+
+  startGame({
+    canvas,
+    refreshRate: REFRESH_RATE,
+    initialState,
+    tick,
+    mapStateToGraphics,
+  });
 }
 
-// TODO: add spin
-// TODO: consider making a system where the state is mapped to some sort of internal
-// representation of a drawing, then the internal logic will convert that into a
-// canvas drawing (maybe some sort of mapStateToDraw and some functions like square()
-// that take in parameters and return the internal representation which the internal
-// drawing tool then converts into an actual drawing on the screen)
+// TODO: make the ball a circle
+// TODO: Consider switching from speed/angle to vx/vy. Also, switch to storing speed/angle (or vx/vy, whichever we choose), in a "vector" object inside the object
+// TODO: add flow/typescript
+// TODO: add eslint
 // TODO: adversarial neural network bewteen left and right side
+// TODO: add spin
