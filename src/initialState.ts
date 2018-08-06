@@ -5,15 +5,33 @@ import {
   WIDTH,
   PADDLE_DISTANCE_FROM_WALL,
   BALL_RADIUS,
-} from './Size.js';
+} from './Size';
 
-import { WHITE } from './Color.js';
+import { WHITE } from './Color';
 
-import { zeroVector } from './Vector.js';
+import { zeroVector } from './Vector';
 
-export default {
+import { Paddle } from './Paddle';
+import { Ball } from './Ball';
+import { Scores } from './Score';
+
+interface BallShadowSingle {
+  ball: Ball;
+  time: number;
+}
+
+export type BallShadow = BallShadowSingle[];
+
+export interface State {
+  paddle1: Paddle;
+  paddle2: Paddle;
+  ball: Ball;
+  scores: Scores;
+  ballShadow: BallShadow;
+}
+
+const initialState: State = {
   paddle1: {
-    id: 'paddle1',
     y: HEIGHT / 2 - PADDLE_HEIGHT / 2,
     x: PADDLE_DISTANCE_FROM_WALL,
     height: PADDLE_HEIGHT,
@@ -22,7 +40,6 @@ export default {
     color: WHITE,
   },
   paddle2: {
-    id: 'paddle2',
     y: HEIGHT / 2 - PADDLE_HEIGHT / 2,
     x: WIDTH - PADDLE_DISTANCE_FROM_WALL * 2,
     height: PADDLE_HEIGHT,
@@ -53,4 +70,7 @@ export default {
     radius: BALL_RADIUS,
     color: WHITE,
   },
+  ballShadow: [],
 };
+
+export default initialState;

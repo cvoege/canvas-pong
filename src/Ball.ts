@@ -1,40 +1,50 @@
-import { WIDTH, HEIGHT, PADDLE_WIDTH, PADDLE_HEIGHT } from './Size.js';
-import { right, bottom, left } from './Rectangle.js';
-import { rawMove } from './Move.js';
+import { WIDTH, HEIGHT, PADDLE_WIDTH, PADDLE_HEIGHT } from './Size';
+import { right, bottom, left } from './Rectangle';
+import { rawMove } from './Move';
+
+import { Paddle } from './Paddle';
+import { Color } from './Color';
+import { Scores } from './Score';
 
 import {
+  Vector,
   reflectOnXAxis,
   reflectOnYAxis,
   addVectors,
   mulityVectorByScalar,
   zeroVector,
   getVectorFromDirectionVector,
-} from './Vector.js';
+} from './Vector';
+
+export interface Ball {
+  vector: Vector;
+  x: number;
+  y: number;
+  radius: number;
+  color: Color;
+}
 
 // TODO: move this into a different file
-function checkCollision(a, b) {
+function checkCollision(a: Ball | Paddle, b: Ball | Paddle) {
   return a.x < right(b) && right(a) > b.x && a.y < bottom(b) && bottom(a) > b.y;
 }
 
-function combineBallAndPaddleVector(ball, paddle) {
+function combineBallAndPaddleVector(ball: Ball, paddle: Paddle) {
   const reversedBallVector = reflectOnYAxis(ball.vector);
-  console.log(1, reversedBallVector);
   // Lower the speed of the paddle when calculating combined speed
   // to account for friction, otherwise ball gets super fast super quick.
   const adjustedPaddleVector = mulityVectorByScalar(paddle.vector, 1 / 3);
-  console.log(2, adjustedPaddleVector);
 
-  console.log(3, addVectors(reversedBallVector, adjustedPaddleVector));
   return addVectors(reversedBallVector, adjustedPaddleVector);
 }
 
 export const getNextBall = (
-  ball,
-  timeDifference,
-  spacePressed,
-  paddle1,
-  paddle2,
-  scores,
+  ball: Ball,
+  timeDifference: number,
+  spacePressed: boolean,
+  paddle1: Paddle,
+  paddle2: Paddle,
+  scores: Scores,
 ) => {
   // Computes where the ball *wants* to be, if it isn't interrupted by a collision.
   const rawBall = rawMove(ball, timeDifference);
@@ -69,13 +79,14 @@ export const getNextBall = (
       return rawBall.vector;
     }
   };
+  if (offScreenLeft || offScreenRight) {
+    console.log(ball.vector, rawBall.vector, getVector());
+  }
 
   const getYPos = () => {
     if (offScreenRight) {
-      // return WIDTH - (right(rawBall) - WIDTH);
       return HEIGHT / 2;
     } else if (offScreenLeft) {
-      // return Math.abs(rawBall.x);
       return HEIGHT / 2;
     } else if (bottom(rawBall) > HEIGHT) {
       return HEIGHT - (bottom(rawBall) - HEIGHT);

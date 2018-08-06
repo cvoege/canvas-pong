@@ -1,5 +1,5 @@
-export const top = (elem) => elem.y;
-export const bottom = (elem) => {
+export const top = (elem: any) => elem.y;
+export const bottom = (elem: any) => {
   if (typeof elem.height === 'number') {
     return elem.y + elem.height;
   } else if (typeof elem.radius === 'number') {
@@ -8,8 +8,8 @@ export const bottom = (elem) => {
     throw new Error('bottom called on invalid object');
   }
 };
-export const left = (elem) => elem.x;
-export const right = (elem) => {
+export const left = (elem: any) => elem.x;
+export const right = (elem: any) => {
   if (typeof elem.width === 'number') {
     return elem.x + elem.width;
   } else if (typeof elem.radius === 'number') {

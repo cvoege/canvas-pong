@@ -1,12 +1,22 @@
-import { HEIGHT } from './Size.js';
-import { PADDLE_MOVE_SPEED, getPixelChange } from './Speed.js';
-import { zeroVector } from './Vector.js';
+import { HEIGHT } from './Size';
+import { PADDLE_MOVE_SPEED, getPixelChange } from './Speed';
+import { Vector, zeroVector } from './Vector';
+import { Color } from './Color';
+
+export interface Paddle {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  vector: Vector;
+  color: Color;
+}
 
 export const getNextPaddle = (
-  paddle,
-  upPressed,
-  downPressed,
-  timeDifference,
+  paddle: Paddle,
+  upPressed: boolean,
+  downPressed: boolean,
+  timeDifference: number,
 ) => {
   const pixelChange = getPixelChange(PADDLE_MOVE_SPEED, timeDifference);
   const getRawYPos = () => {

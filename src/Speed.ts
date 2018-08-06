@@ -5,6 +5,6 @@ export const PADDLE_MOVE_SPEED = 0.35;
 
 // speed: mesasured in pixels per millsecond
 // timeDifference: milliseconds since last render
-export function getPixelChange(speed, timeDifference) {
+export function getPixelChange(speed: number, timeDifference: number) {
   return speed * timeDifference;
 }

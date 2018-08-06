@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "serve": "npx http-server ./ -c-1"
+    "dev": "npx webpack-dev-server --mode=development",
+    "lint": "npx tsc"
   },
   "repository": {
     "type": "git",
@@ -34,6 +35,11 @@
   },
   "homepage": "https://github.com/cvoege/canvas-pong#readme",
   "dependencies": {
-    "http-server": "^0.11.1"
+    "awesome-typescript-loader": "^5.2.0",
+    "concurrently": "^3.6.1",
+    "typescript": "^3.0.1",
+    "webpack": "^4.16.4",
+    "webpack-cli": "^3.1.0",
+    "webpack-dev-server": "^3.1.5"
   }
 }
