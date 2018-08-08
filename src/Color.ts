@@ -12,10 +12,10 @@ export const getColor = (
   alpha: number = 100,
 ) => {
   return {
-    red,
-    green,
-    blue,
     alpha,
+    blue,
+    green,
+    red,
   };
 };
 

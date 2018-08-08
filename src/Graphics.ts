@@ -1,6 +1,6 @@
 import getInputs, { Inputs } from './getInputs';
 
-import { toColorString, Color } from './Color';
+import { Color, toColorString } from './Color';
 import { State } from './initialState';
 
 const clearFrame = (context: CanvasRenderingContext2D) => {
@@ -43,7 +43,8 @@ export const text = (object: Textable) => (
 interface Circleable {
   x: number;
   y: number;
-  radius: number;
+  width: number;
+  height: number;
   color: Color;
 }
 
@@ -55,9 +56,9 @@ export const circle = (object: Circleable) => (
   // circle.moveTo(object.)
   context.beginPath();
   context.arc(
-    object.x + object.radius,
-    object.y + object.radius,
-    object.radius,
+    object.x + object.width / 2,
+    object.y + object.height / 2,
+    object.width / 2,
     0,
     Math.PI * 2,
     false,
@@ -88,7 +89,9 @@ export const startGame = ({
   alpha?: boolean;
 }) => {
   const context = canvas.getContext('2d', { alpha });
-  if (!context) throw new Error('Could not get context from canvas element');
+  if (!context) {
+    throw new Error('Could not get context from canvas element');
+  }
 
   const redraw = (previousState: State, previousTime: number) => {
     // Get current time
@@ -96,10 +99,10 @@ export const startGame = ({
 
     // Process new state
     const state = tick({
-      state: previousState,
-      inputs: getInputs(),
-      timeDifference: currentTime - previousTime,
       currentTime,
+      inputs: getInputs(),
+      state: previousState,
+      timeDifference: currentTime - previousTime,
     });
     const renderables = mapStateToGraphics(state);
 

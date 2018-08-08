@@ -1,7 +1,7 @@
-import { HEIGHT } from './Size';
-import { PADDLE_MOVE_SPEED, getPixelChange } from './Speed';
-import { Vector, zeroVector } from './Vector';
 import { Color } from './Color';
+import { HEIGHT } from './Size';
+import { getPixelChange, PADDLE_MOVE_SPEED } from './Speed';
+import { Vector, zeroVector } from './Vector';
 
 export interface Paddle {
   x: number;
@@ -51,13 +51,13 @@ export const getNextPaddle = (
   const getVector = () => {
     if (upPressed && !downPressed) {
       return {
-        vy: -PADDLE_MOVE_SPEED,
         vx: 0,
+        vy: -PADDLE_MOVE_SPEED,
       };
     } else if (!upPressed && downPressed) {
       return {
-        vy: PADDLE_MOVE_SPEED,
         vx: 0,
+        vy: PADDLE_MOVE_SPEED,
       };
     } else {
       return zeroVector();

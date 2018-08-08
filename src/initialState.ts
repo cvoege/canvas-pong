@@ -1,18 +1,18 @@
 import {
-  HEIGHT,
-  PADDLE_WIDTH,
-  PADDLE_HEIGHT,
-  WIDTH,
-  PADDLE_DISTANCE_FROM_WALL,
   BALL_RADIUS,
+  HEIGHT,
+  PADDLE_DISTANCE_FROM_WALL,
+  PADDLE_HEIGHT,
+  PADDLE_WIDTH,
+  WIDTH,
 } from './Size';
 
 import { WHITE } from './Color';
 
 import { zeroVector } from './Vector';
 
-import { Paddle } from './Paddle';
 import { Ball } from './Ball';
+import { Paddle } from './Paddle';
 import { Scores } from './Score';
 
 interface BallShadowSingle {
@@ -31,46 +31,47 @@ export interface State {
 }
 
 const initialState: State = {
-  paddle1: {
-    y: HEIGHT / 2 - PADDLE_HEIGHT / 2,
-    x: PADDLE_DISTANCE_FROM_WALL,
-    height: PADDLE_HEIGHT,
-    width: PADDLE_WIDTH,
-    vector: zeroVector(),
+  ball: {
     color: WHITE,
+    height: BALL_RADIUS * 2,
+    vector: zeroVector(),
+    width: BALL_RADIUS * 2,
+    x: WIDTH / 2 - BALL_RADIUS,
+    y: HEIGHT / 2 - BALL_RADIUS,
+  },
+  ballShadow: [],
+  paddle1: {
+    color: WHITE,
+    height: PADDLE_HEIGHT,
+    vector: zeroVector(),
+    width: PADDLE_WIDTH,
+    x: PADDLE_DISTANCE_FROM_WALL,
+    y: HEIGHT / 2 - PADDLE_HEIGHT / 2,
   },
   paddle2: {
-    y: HEIGHT / 2 - PADDLE_HEIGHT / 2,
-    x: WIDTH - PADDLE_DISTANCE_FROM_WALL * 2,
-    height: PADDLE_HEIGHT,
-    width: PADDLE_WIDTH,
-    vector: zeroVector(),
     color: WHITE,
+    height: PADDLE_HEIGHT,
+    vector: zeroVector(),
+    width: PADDLE_WIDTH,
+    x: WIDTH - PADDLE_DISTANCE_FROM_WALL * 2,
+    y: HEIGHT / 2 - PADDLE_HEIGHT / 2,
   },
   scores: {
     paddle1: {
-      value: 0,
       color: WHITE,
       font: '30px Comic Sans MS',
+      value: 0,
       x: 80,
       y: 50,
     },
     paddle2: {
-      value: 0,
       color: WHITE,
       font: '30px Comic Sans MS',
+      value: 0,
       x: WIDTH - 110,
       y: 50,
     },
   },
-  ball: {
-    x: WIDTH / 2 - BALL_RADIUS,
-    y: HEIGHT / 2 - BALL_RADIUS,
-    vector: zeroVector(),
-    radius: BALL_RADIUS,
-    color: WHITE,
-  },
-  ballShadow: [],
 };
 
 export default initialState;

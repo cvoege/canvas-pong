@@ -1,20 +1,20 @@
-import initialState, { State, BallShadow } from './initialState';
 import {
-  S_KEYCODE,
-  W_KEYCODE,
   DOWN_KEYCODE,
-  UP_KEYCODE,
-  SPACE_KEYCODE,
   Inputs,
+  S_KEYCODE,
+  SPACE_KEYCODE,
+  UP_KEYCODE,
+  W_KEYCODE,
 } from './getInputs';
+import initialState, { BallShadow, State } from './initialState';
 
-import { WIDTH, HEIGHT } from './Size';
-import { BLACK, WHITE, setAlpha } from './Color';
+import { BLACK, setAlpha, WHITE } from './Color';
 import { getNextPaddle } from './Paddle';
+import { HEIGHT, WIDTH } from './Size';
 import { REFRESH_RATE } from './Speed';
 
-import { getNextBall, Ball } from './Ball';
-import { rectangle, text, circle, startGame } from './Graphics';
+import { Ball, getNextBall } from './Ball';
+import { circle, rectangle, startGame, text } from './Graphics';
 
 const getBallShadow = (
   ballShadow: BallShadow,
@@ -70,11 +70,11 @@ const tick = ({
 
   return {
     ...state,
+    ball,
+    ballShadow,
     paddle1,
     paddle2,
-    ball,
     scores,
-    ballShadow,
   };
 };
 
@@ -93,23 +93,19 @@ const mapStateToGraphics = (state: State) => {
 };
 
 export function start() {
-  const canvas = <HTMLCanvasElement>document.getElementById('canvas');
+  const canvas = document.getElementById('canvas') as HTMLCanvasElement;
   canvas.width = WIDTH;
   canvas.height = HEIGHT;
 
   startGame({
     canvas,
-    refreshRate: REFRESH_RATE,
     initialState,
-    tick,
     mapStateToGraphics,
+    refreshRate: REFRESH_RATE,
+    tick,
   });
 }
 
-// TODO: change Rectangle.ts to have an actual Rectangle type and not just import Paddle and Ball
-// TODO: clean up Move.ts types
-// TODO: normalize coordinates into a coordinates object like we did with vectors
-// TODO: normalize sizes into a sizes object like we did with vectors/coordiantes
 // TODO: add eslint
 // TODO: adversarial neural network bewteen left and right side
 // TODO: add spin

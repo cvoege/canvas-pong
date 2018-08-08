@@ -1,12 +1,15 @@
 import { getVectorX, getVectorY } from './Vector';
 
-import { Paddle } from './Paddle';
 import { Ball } from './Ball';
+import { Paddle } from './Paddle';
+import { Vector } from './Vector';
 
-export const rawMove = (elem: any, timeDifference: number): any => {
+export const rawMove = (
+  { x, y, vector }: { x: number; y: number; vector: Vector },
+  timeDifference: number,
+): { x: number; y: number } => {
   return {
-    ...elem,
-    x: elem.x + elem.vector.vx * timeDifference,
-    y: elem.y + elem.vector.vy * timeDifference,
+    x: x + vector.vx * timeDifference,
+    y: y + vector.vy * timeDifference,
   };
 };

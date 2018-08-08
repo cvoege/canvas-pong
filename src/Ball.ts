@@ -1,26 +1,27 @@
-import { WIDTH, HEIGHT, PADDLE_WIDTH, PADDLE_HEIGHT } from './Size';
-import { right, bottom, left } from './Rectangle';
 import { rawMove } from './Move';
+import { bottom, left, right } from './Rectangle';
+import { HEIGHT, PADDLE_HEIGHT, PADDLE_WIDTH, WIDTH } from './Size';
 
-import { Paddle } from './Paddle';
 import { Color } from './Color';
+import { Paddle } from './Paddle';
 import { Scores } from './Score';
 
 import {
-  Vector,
+  addVectors,
+  getVectorFromDirectionVector,
+  mulityVectorByScalar,
   reflectOnXAxis,
   reflectOnYAxis,
-  addVectors,
-  mulityVectorByScalar,
+  Vector,
   zeroVector,
-  getVectorFromDirectionVector,
 } from './Vector';
 
 export interface Ball {
   vector: Vector;
   x: number;
   y: number;
-  radius: number;
+  width: number;
+  height: number;
   color: Color;
 }
 
@@ -45,9 +46,9 @@ export const getNextBall = (
   paddle1: Paddle,
   paddle2: Paddle,
   scores: Scores,
-) => {
   // Computes where the ball *wants* to be, if it isn't interrupted by a collision.
-  const rawBall = rawMove(ball, timeDifference);
+): [Ball, Scores] => {
+  const rawBall: Ball = { ...ball, ...rawMove(ball, timeDifference) };
   const collidesWithPaddle1 = checkCollision(ball, paddle1);
   const collidesWithPaddle2 = checkCollision(ball, paddle2);
   const offScreenRight = right(rawBall) > WIDTH;
@@ -108,8 +109,8 @@ export const getNextBall = (
       // return 2 * right(paddle1) - rawBall.x;
       return right(paddle1) + 1;
     } else if (collidesWithPaddle2) {
-      return left(paddle2) - rawBall.radius * 2 - 1;
-      // return paddle2.x - (right(rawBall) - paddle2.x) - (rawBall.radius * 2);
+      return left(paddle2) - rawBall.width - 1;
+      // return paddle2.x - (right(rawBall) - paddle2.x) - (rawBall.width);
     } else {
       return rawBall.x;
     }
