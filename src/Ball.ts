@@ -1,6 +1,6 @@
 import { rawMove } from './Move';
 import { bottom, left, right } from './Rectangle';
-import { HEIGHT, PADDLE_HEIGHT, PADDLE_WIDTH, WIDTH } from './Size';
+import { HEIGHT, WIDTH } from './Size';
 
 import { Color } from './Color';
 import { GameState } from './GameState';

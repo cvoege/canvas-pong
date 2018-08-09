@@ -8,7 +8,7 @@ import {
 } from './getInputs';
 import initialState, { BallShadow, State } from './initialState';
 
-import { BLACK, setAlpha, WHITE } from './Color';
+import { setAlpha } from './Color';
 import { getNextPaddle } from './Paddle';
 import { HEIGHT, WIDTH } from './Size';
 import { REFRESH_RATE } from './Speed';
@@ -159,9 +159,10 @@ const mapNetworkOutputToInputs = ([downPressed, upPressed]: number[]) => {
 
 const networksPerGeneration = 1000;
 // Run a maximum of 10000 frames (166s)
-const maxFramesPerNetwork = 10000;
+const framesPerGeneration = 10000;
+const gamesPerGeneration = 5;
 
-const runNetwork = (network: NeuralNetwork) => {
+const getSingleGameFitness = (network: NeuralNetwork) => {
   const startTime = Date.now();
   let currentState = tick({
     state: initialState,
@@ -170,7 +171,8 @@ const runNetwork = (network: NeuralNetwork) => {
     currentTime: startTime,
   });
 
-  for (let frameNumber = 0; frameNumber < maxFramesPerNetwork; frameNumber++) {
+  let frameNumber = 0;
+  for (frameNumber = 0; frameNumber < framesPerGeneration; frameNumber++) {
     const networkOutputs = getOutputs(
       mapStateToNetworkInput(currentState),
       network,
@@ -188,14 +190,14 @@ const runNetwork = (network: NeuralNetwork) => {
     // If the game goes on until the time limit and no one wins,
     // give a succcess score that's hirgher than losing but
     // much lower than winning
-    return 0.1;
+    return 1;
   } else {
     if (currentState.scores.paddle2.value === 1) {
-      // TODO: change this so that paddles get more points for winning better (sum of all hits? faster = better?)
-      return 1;
+      // More points for finishing the game faster
+      return 2 + (1 - frameNumber / framesPerGeneration);
     } else if (currentState.scores.paddle1.value === 1) {
-      // TODO change this so paddles get more points for losing better (sum of all hits? slower = holding off  longer = better?)
-      return 0;
+      // More points for prolonging the game despite losing
+      return frameNumber / framesPerGeneration;
     } else {
       throw new Error(
         'For some reason the game is still going but no one scored.',
@@ -204,18 +206,54 @@ const runNetwork = (network: NeuralNetwork) => {
   }
 };
 
+const getMultiGameFitness = (network: NeuralNetwork) => {
+  const singleGameResults = [];
+  for (let i = 0; i < gamesPerGeneration; i++) {
+    singleGameResults.push(getSingleGameFitness(network));
+  }
+  return singleGameResults.reduce((acc, current) => current + acc, 0);
+};
+
 function runGeneration(networks: NeuralNetwork[]) {
-  return networks.map((network) => [network, runNetwork(network)]);
+  const networksAndFitnesses = networks
+    .map(
+      (network): [NeuralNetwork, number] => [
+        network,
+        getMultiGameFitness(network),
+      ],
+    )
+    .sort(([_a, aFitness], [_b, bFitness]) => bFitness - aFitness);
+
+  const [best, ...rest] = networksAndFitnesses;
+  // Keep an unmutated copy of the best network
+  const selectedNetworks = [
+    best[0],
+    ...rest
+      .filter(([_, fitness]) => fitness / best[1] > Math.random())
+      .map(([n, _]) => mutateNetwork(n)),
+  ];
+
+  let i = 0;
+  const originalLength = selectedNetworks.length;
+  while (selectedNetworks.length < networks.length) {
+    selectedNetworks.push(mutateNetwork(selectedNetworks[i]));
+    i++;
+    if (i > originalLength) {
+      i = 0;
+    }
+  }
+  return selectedNetworks;
 }
 
-function evolve(numGenerations: number) {
+function evolve(_numGenerations: number) {
   const initialNetworks = new Array(networksPerGeneration)
     .fill(0)
     .map(() => createRandomNetwork(numInputs, [10, 10], 2));
 
-  console.log(runGeneration(initialNetworks));
-  // TODO: write function to weed out the current generation, keep the best of the last
-  // generation, and breed to create the next generation
+  const firstGenerationResult = runGeneration(initialNetworks);
+  console.log(firstGenerationResult);
+  // TODO write network for left side so we can build them up against eachother
+  // TODO write ability to play as human against a neural net
 }
 
 evolve(1);

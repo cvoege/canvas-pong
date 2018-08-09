@@ -40,14 +40,6 @@ export const getNextPaddle = (
     }
   };
 
-  const getSpeed = () => {
-    if ((upPressed && !downPressed) || (!upPressed && downPressed)) {
-      return PADDLE_MOVE_SPEED;
-    } else {
-      return 0;
-    }
-  };
-
   const getVector = () => {
     if (upPressed && !downPressed) {
       return {

@@ -1,7 +1,3 @@
-import { getVectorX, getVectorY } from './Vector';
-
-import { Ball } from './Ball';
-import { Paddle } from './Paddle';
 import { Vector } from './Vector';
 
 export const rawMove = (
