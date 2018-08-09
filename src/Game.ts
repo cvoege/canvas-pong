@@ -15,7 +15,7 @@ import { REFRESH_RATE } from './Speed';
 
 import { Ball, getNextBall } from './Ball';
 import { circle, rectangle, startGame, text } from './Graphics';
-import { createRandomNetwork, runNetwork } from './Network';
+import { createRandomNetwork, getOutputs } from './Network';
 
 const getBallShadow = (
   ballShadow: BallShadow,
@@ -110,12 +110,11 @@ export function start() {
 // TODO: adversarial neural network bewteen left and right side
 // TODO: add spin
 
-const network = createRandomNetwork(200, [500, 500], 2);
+const network = createRandomNetwork(20, [10, 10], 2);
 console.log(network);
 const input = {
-  neurons: new Array(200).fill(0).map((v) => ({
+  neurons: new Array(20).fill(0).map((v) => ({
     activation: Math.random(),
   })),
 };
-
-console.log(runNetwork(input, network));
+console.log(getOutputs(input, network));

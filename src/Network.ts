@@ -85,7 +85,7 @@ function breedNetwork(network: NeuralNetwork): NeuralNetwork {
   return network;
 }
 
-export function runNetwork(
+export function getOutputs(
   inputLayer: InputLayer,
   network: NeuralNetwork,
 ): number[] {
@@ -105,4 +105,4 @@ export function runNetwork(
   return finalActivations;
 }
 
-// function runNetwork();
+// function getOutputs();
