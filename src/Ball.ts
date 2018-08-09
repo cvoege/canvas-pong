@@ -3,6 +3,7 @@ import { bottom, left, right } from './Rectangle';
 import { HEIGHT, PADDLE_HEIGHT, PADDLE_WIDTH, WIDTH } from './Size';
 
 import { Color } from './Color';
+import { GameState } from './GameState';
 import { Paddle } from './Paddle';
 import { Scores } from './Score';
 
@@ -46,8 +47,9 @@ export const getNextBall = (
   paddle1: Paddle,
   paddle2: Paddle,
   scores: Scores,
+  gameState: GameState,
   // Computes where the ball *wants* to be, if it isn't interrupted by a collision.
-): [Ball, Scores] => {
+): [Ball, Scores, GameState] => {
   const rawBall: Ball = { ...ball, ...rawMove(ball, timeDifference) };
   const collidesWithPaddle1 = checkCollision(ball, paddle1);
   const collidesWithPaddle2 = checkCollision(ball, paddle2);
@@ -57,7 +59,18 @@ export const getNextBall = (
   const offScreenUp = rawBall.y < 0;
 
   const getVector = () => {
-    if (offScreenUp || offScreenDown) {
+    if (gameState === 'pre_game') {
+      if (spacePressed) {
+        const baseAngle = Math.random() * (Math.PI / 4) - Math.PI / 8;
+        const baseVector = getVectorFromDirectionVector({
+          angle: baseAngle,
+          magnitude: 0.35,
+        });
+        return Math.random() >= 0.5 ? baseVector : reflectOnYAxis(baseVector);
+      } else {
+        return zeroVector();
+      }
+    } else if (offScreenUp || offScreenDown) {
       return reflectOnXAxis(rawBall.vector);
     } else if (collidesWithPaddle1) {
       return combineBallAndPaddleVector(rawBall, paddle1);
@@ -65,24 +78,20 @@ export const getNextBall = (
       return combineBallAndPaddleVector(rawBall, paddle2);
     } else if (offScreenRight || offScreenLeft) {
       return zeroVector();
-    } else if (
-      spacePressed &&
-      rawBall.vector.vx === 0 &&
-      rawBall.vector.vy === 0
-    ) {
-      const baseAngle = Math.random() * (Math.PI / 4) - Math.PI / 8;
-      const baseVector = getVectorFromDirectionVector({
-        angle: baseAngle,
-        magnitude: 0.35,
-      });
-      return Math.random() >= 0.5 ? baseVector : reflectOnYAxis(baseVector);
     } else {
       return rawBall.vector;
     }
   };
-  if (offScreenLeft || offScreenRight) {
-    console.log(ball.vector, rawBall.vector, getVector());
-  }
+
+  const getGameState = () => {
+    if (gameState === 'pre_game' && spacePressed) {
+      return 'playing';
+    } else if (offScreenLeft || offScreenRight) {
+      return 'pre_game';
+    } else {
+      return gameState;
+    }
+  };
 
   const getYPos = () => {
     if (offScreenRight) {
@@ -140,5 +149,6 @@ export const getNextBall = (
       y: getYPos(),
     },
     getNextScores(),
+    getGameState(),
   ];
 };

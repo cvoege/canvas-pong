@@ -12,6 +12,7 @@ import { WHITE } from './Color';
 import { zeroVector } from './Vector';
 
 import { Ball } from './Ball';
+import { GameState } from './GameState';
 import { Paddle } from './Paddle';
 import { Scores } from './Score';
 
@@ -28,6 +29,7 @@ export interface State {
   ball: Ball;
   scores: Scores;
   ballShadow: BallShadow;
+  gameState: GameState;
 }
 
 const initialState: State = {
@@ -72,6 +74,7 @@ const initialState: State = {
       y: 50,
     },
   },
+  gameState: 'pre_game',
 };
 
 export default initialState;

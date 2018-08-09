@@ -15,7 +15,12 @@ import { REFRESH_RATE } from './Speed';
 
 import { Ball, getNextBall } from './Ball';
 import { circle, rectangle, startGame, text } from './Graphics';
-import { createRandomNetwork, getOutputs } from './Network';
+import {
+  createRandomNetwork,
+  getOutputs,
+  mutateNetwork,
+  NeuralNetwork,
+} from './Network';
 
 const getBallShadow = (
   ballShadow: BallShadow,
@@ -58,13 +63,14 @@ const tick = ({
     timeDifference,
   );
 
-  const [ball, scores] = getNextBall(
+  const [ball, scores, gameState] = getNextBall(
     state.ball,
     timeDifference,
     keysDown.has(SPACE_KEYCODE),
     paddle1,
     paddle2,
     state.scores,
+    state.gameState,
   );
 
   const ballShadow = getBallShadow(state.ballShadow, state.ball, currentTime);
@@ -76,6 +82,7 @@ const tick = ({
     paddle1,
     paddle2,
     scores,
+    gameState,
   };
 };
 
@@ -107,14 +114,108 @@ export function start() {
   });
 }
 
-// TODO: adversarial neural network bewteen left and right side
+// TODO move learning stuff to differnet file
 // TODO: add spin
 
-const network = createRandomNetwork(20, [10, 10], 2);
-console.log(network);
-const input = {
-  neurons: new Array(20).fill(0).map((v) => ({
-    activation: Math.random(),
-  })),
+const mapStateToNetworkInput = ({ ball, paddle1, paddle2 }: State) => {
+  const values = [
+    ball.x,
+    ball.y,
+    ball.vector.vx,
+    ball.vector.vy,
+    paddle1.x,
+    paddle1.y,
+    paddle1.vector.vx,
+    paddle1.vector.vy,
+    paddle2.x,
+    paddle2.y,
+    paddle2.vector.vx,
+    paddle2.vector.vy,
+  ];
+
+  return {
+    neurons: values.map((value) => {
+      return {
+        activation: value,
+      };
+    }),
+  };
 };
-console.log(getOutputs(input, network));
+
+const numInputs = mapStateToNetworkInput(initialState).neurons.length;
+
+const mapNetworkOutputToInputs = ([downPressed, upPressed]: number[]) => {
+  return {
+    keysDown: <Set<number>>(
+      new Set(
+        [
+          downPressed > 0.5 ? DOWN_KEYCODE : null,
+          upPressed > 0.5 ? UP_KEYCODE : null,
+        ].filter((x) => x === null),
+      )
+    ),
+  };
+};
+
+const networksPerGeneration = 1000;
+// Run a maximum of 10000 frames (166s)
+const maxFramesPerNetwork = 10000;
+
+const runNetwork = (network: NeuralNetwork) => {
+  const startTime = Date.now();
+  let currentState = tick({
+    state: initialState,
+    inputs: { keysDown: new Set([SPACE_KEYCODE]) },
+    timeDifference: 0,
+    currentTime: startTime,
+  });
+
+  for (let frameNumber = 0; frameNumber < maxFramesPerNetwork; frameNumber++) {
+    const networkOutputs = getOutputs(
+      mapStateToNetworkInput(currentState),
+      network,
+    );
+    currentState = tick({
+      state: currentState,
+      inputs: mapNetworkOutputToInputs(networkOutputs),
+      timeDifference: REFRESH_RATE,
+      currentTime: startTime + frameNumber * REFRESH_RATE,
+    });
+    if (currentState.gameState !== 'playing') break;
+  }
+
+  if (currentState.gameState === 'playing') {
+    // If the game goes on until the time limit and no one wins,
+    // give a succcess score that's hirgher than losing but
+    // much lower than winning
+    return 0.1;
+  } else {
+    if (currentState.scores.paddle2.value === 1) {
+      // TODO: change this so that paddles get more points for winning better (sum of all hits? faster = better?)
+      return 1;
+    } else if (currentState.scores.paddle1.value === 1) {
+      // TODO change this so paddles get more points for losing better (sum of all hits? slower = holding off  longer = better?)
+      return 0;
+    } else {
+      throw new Error(
+        'For some reason the game is still going but no one scored.',
+      );
+    }
+  }
+};
+
+function runGeneration(networks: NeuralNetwork[]) {
+  return networks.map((network) => [network, runNetwork(network)]);
+}
+
+function evolve(numGenerations: number) {
+  const initialNetworks = new Array(networksPerGeneration)
+    .fill(0)
+    .map(() => createRandomNetwork(numInputs, [10, 10], 2));
+
+  console.log(runGeneration(initialNetworks));
+  // TODO: write function to weed out the current generation, keep the best of the last
+  // generation, and breed to create the next generation
+}
+
+evolve(1);

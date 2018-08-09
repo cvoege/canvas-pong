@@ -15,7 +15,7 @@ interface Layer {
   neurons: Neuron[];
 }
 
-interface NeuralNetwork {
+export interface NeuralNetwork {
   inputSize: number;
   hiddenLayers: Layer[];
   outputLayer: Layer;
@@ -80,9 +80,56 @@ export function createRandomNetwork(
   };
 }
 
-function breedNetwork(network: NeuralNetwork): NeuralNetwork {
+const CHANCE_OF_WEIGHT_MUTATION = 0.05;
+const CHANCE_OF_BIAS_MUTATION = 0.05;
+
+export function mutateNetwork({
+  inputSize,
+  hiddenLayers,
+  outputLayer,
+}: NeuralNetwork): NeuralNetwork {
   // TODO: breed network to return a new neural network via random mutation
-  return network;
+  return {
+    inputSize,
+    hiddenLayers: hiddenLayers.map((hiddenLayer) => {
+      return {
+        neurons: hiddenLayer.neurons.map((neuron: Neuron) => {
+          const bias =
+            Math.random() > CHANCE_OF_BIAS_MUTATION
+              ? neuron.bias + neuron.bias * (Math.random() - 0.5)
+              : neuron.bias;
+          const weights = neuron.weights.map(
+            (weight: number) =>
+              Math.random() > CHANCE_OF_WEIGHT_MUTATION
+                ? weight + weight * (Math.random() - 0.5)
+                : weight,
+          );
+          return {
+            bias,
+            weights,
+          };
+        }),
+      };
+    }),
+    outputLayer: {
+      neurons: outputLayer.neurons.map((neuron: Neuron) => {
+        const bias =
+          Math.random() > CHANCE_OF_BIAS_MUTATION
+            ? neuron.bias + neuron.bias * (Math.random() - 0.5)
+            : neuron.bias;
+        const weights = neuron.weights.map(
+          (weight: number) =>
+            Math.random() > CHANCE_OF_WEIGHT_MUTATION
+              ? weight + weight * (Math.random() - 0.5)
+              : weight,
+        );
+        return {
+          bias,
+          weights,
+        };
+      }),
+    },
+  };
 }
 
 export function getOutputs(
